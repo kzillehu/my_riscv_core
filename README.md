@@ -1,2 +1,13 @@
-# my_riscv_core
-TL-Verilog code to implement a few instructions for the RISC-V Core. Based on the instructions of Steve Hoover course on LF-Build RISC-V Core
+# My RISC-V Core Processor
+
+
+
+## Getting started
+
+A Simplified RISC-V processor implemented to for a few instructions. 
+
+## Authors and acknowledgment
+
+Author: Zille Huma Kamal 
+
+Acknowledgment: Based on the instructions in the LF-RISC-V Core Processor course by [Steve Hoover](https://github.com/stevehoover) 
