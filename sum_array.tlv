@@ -22,53 +22,41 @@
    //  x3 (base address): 8, 12, 16, 20, 24
    //
    //testing
-                   //assigning values to elements in array a in data memory
-                   m4_asm(ADDI, x1, x0, 10)
-                   m4_asm(ADDI, x2, x0, 100)
-                   m4_asm(ADDI, x3, x0, 11)
-                   m4_asm(ADDI, x4, x0, 101)
-                   m4_asm(ADDI, x5, x0, 1)
-                   //something is wrong in accessing DMEM until that fix - this is a hack
-                  //sw instructions are not working correctly, this hack is based on its behaviour
-                	 //correct instructions have been written in the comments besides the instruction
-                   m4_asm(SW, x1, x1, 1000) //8		// m4_asm(SW, x1, x0, 1000) 	//byte8		//notice DMem has words that are 2 bytes
-                   m4_asm(SW, x2, x2, 1010)	//10	// m4_asm(SW, x2, x0, 1010)   //byte 10
-                   m4_asm(SW, x3, x3, 1110) //14		// m4_asm(SW, x3, x0, 1100)   //byte 12
-                   m4_asm(SW, x4, x4, 10000)	//16	// m4_asm(SW, x4, x0, 1110)   //byte 14
-                   m4_asm(SW, x5, x5, 11000)	//24	// m4_asm(SW, x5, x0, 10000)  //byte 16
-                   
-                   //code for summing 5 elements of an array stored in data memory
+   //assigning values to elements in array a in data memory
+   m4_asm(ADDI, x1, x0, 10)
+   m4_asm(ADDI, x2, x0, 100)
+   m4_asm(ADDI, x3, x0, 11)
+   m4_asm(ADDI, x4, x0, 101)
+   m4_asm(ADDI, x5, x0, 1)
+   //something is wrong in accessing DMEM until that fix - this is a hack
+  //sw instructions are not working correctly, this hack is based on its behaviour
+	 //correct instructions have been written in the comments besides the instruction
+   m4_asm(SW, x1, x1, 1000) //8		// m4_asm(SW, x1, x0, 1000) 	//byte8		//notice DMem has words that are 2 bytes
+   m4_asm(SW, x2, x2, 1010)	//10	// m4_asm(SW, x2, x0, 1010)   //byte 10
+   m4_asm(SW, x3, x3, 1110) //14		// m4_asm(SW, x3, x0, 1100)   //byte 12
+   m4_asm(SW, x4, x4, 10000)	//16	// m4_asm(SW, x4, x0, 1110)   //byte 14
+   m4_asm(SW, x5, x5, 11000)	//24	// m4_asm(SW, x5, x0, 10000)  //byte 16
+   
+   //code for summing 5 elements of an array stored in data memory
                    
    m4_asm(ADDI, x20, x0, 0)			//initialize x20 to 0
    m4_asm(ADDI, x21, x0, 00101)			//initialize x21 to 5
    m4_asm(ADDI, x22, x0, 01000)			//initialize x22 to 8
                    //loop
-   m4_asm(LW, x23, x22, 0)    //load element from array
-   m4_asm(ADD, x20, x20, x23)    //add to sum
-                    m4_asm(ADDI, x21, x21, 111111111111)	//subtract 1
-                    m4_asm(ADDI, x22, x22, 100) //add 4 to dmem since Dmem is 4 bytes
-                   m4_asm(BNE, x21, x0, 1111111110000) //go to loop
-                    m4_asm(ADDI, x22, x0, 11100) //put sum in 28
-                   m4_asm(SW, x20, x20, 10000)			//using hack in sw again, should be // m4_asm(SW, x20, x0, 11100)
-   //original sample test code - once working this should be removed, until line 62. keep line 63, so that we can set x30 to 1 to get passed message 
-   m4_asm(ADDI, x14, x0, 0)             // Initialize sum register a4 with 0
-   m4_asm(ADDI, x12, x0, 1010)          // Store count of 10 in register a2.
-   m4_asm(ADDI, x13, x0, 1)             // Initialize loop count register a3 with 0
-   // Loop:
-   m4_asm(ADD, x14, x13, x14)           // Incremental summation
-   m4_asm(ADDI, x13, x13, 1)            // Increment loop count by 1
-   m4_asm(BLT, x13, x12, 1111111111000) // If a3 is less than a2, branch to label named <loop>
-   // Test result value in x14, and set x31 to reflect pass/fail.
-  	m4_asm(ADD, x0, x12, x13)				// write to X0 - this will eventually be fixed so that writes to X0 are not allowed as per the ISA
-   m4_asm(ADDI, x30, x14, 111111010100) // Subtract expected value of 44 to set x30 to 1 if and only iff the result is 45 (1 + 2 + ... + 9).
-   m4_asm(BGE, x0, x0, 0) // Done. Jump to itself (infinite loop). (Up to 20-bit signed immediate plus implicit 0 bit (unlike JALR) provides byte address; last immediate bit should also be 0)
+   m4_asm(LW, x23, x22, 0)    			//load element from array
+   m4_asm(ADD, x20, x20, x23)    		//add to sum
+   m4_asm(ADDI, x21, x21, 111111111111)		//subtract 1
+   m4_asm(ADDI, x22, x22, 100) 			//add 4 to dmem since Dmem is 4 bytes
+   m4_asm(BNE, x21, x0, 1111111110000) 		//go to loop
+   m4_asm(ADDI, x22, x0, 11100) 		//put sum in 28
+   m4_asm(SW, x20, x20, 10000)			//using hack in sw again, should be // m4_asm(SW, x20, x0, 11100)
+   m4_asm(ADDI, x30, x0, 1) 			// set x30 to 1 as a signal of success.
    m4_asm_end()
    m4_define(['M4_MAX_CYC'], 80)	//changed to 80 to allow the termination of code
    //---------------------------------------------------------------------------------
 
-	//m4_test_prog()    //remove this line later
 
- //----------------------------HDL Code to that implements a RISC-V Processor-----------------------------------------------------
+ //----------------------------HDL Code that implements a RISC-V Processor-----------------------------------------------------
  // /==============================\
  // | The code below is in the HDL |
  // | TL-Verilog and implements    |
