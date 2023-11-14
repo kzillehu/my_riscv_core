@@ -6,40 +6,55 @@
 
 \m5
    assemble_imem(['
-      # /=====================\
-      # | Count to 10 Program |
-      # \=====================/
+      # /=======================\
+      # | Sum elements of array |
+      # \=======================/
       #
       # Default program for RV32I test
       # Add a[0] (2),a[1] (4),a[2] (3),a[3] (5), and a[4] (1) (in that order from DMem).
       # Store final sum in memory location 6 (15).
       #
       # Regs:
-      # x2: sum		# not using ABI conventions for simplicity of CS251
+      # x2: sum		# not using ABI conventions for simplicity of reading code for CS251
       # x1: k
       # x3: base address register
       # t1: final value -- NOT USED RIGHT NOW
       # a1: expected result  -- NOT USED RIGHT NOW
       # t2: store addr  -- NOT USED RIGHT NOW
+      init:
+         ADDI x1, x0, 2           #     a[0] = 2
+         ADDI x2, x0, 4           #     a[1] = 4
+         ADDI x3, x0, 3           #     a[2] = 3
+         ADDI x4, x0, 5           #     a[3] = 5
+         ADDI x5, x0, 1           #     a[4] = 1
+         ADDI x6, x0, 8           #     base address of array a, ie a[0]
+         SW   x1, 0(x6)				 # 	 store a[0]
+         ADDI x6, x6, 4           #     address of a[1]
+         SW   x2, 0(x6)				 # 	 store a[1]
+         ADDI x6, x6, 4           #     address of a[2]
+         SW   x3, 0(x6)				 # 	 store a[2]
+         ADDI x6, x6, 4           #     address of a[3]
+         SW   x4, 0(x6)				 # 	 store a[3]
+         ADDI x6, x6, 4           #     address of a[4]
+         SW   x5, 0(x6)				 # 	 store a[4]
       reset:
-         ADDI x2, x0, 0          #     sum = 0
-         ORI t0, zero, 1          #     cnt = 1
-         ORI a2, zero, 10         #     ten = 10
-         ORI a0, zero, 0          #     out = 0
+         ADDI x2, x0, 0           #     sum = 0
+         ADDI x1, x0, 5           #     k = 5
+         ADDI x3, x0, 8           #     base address of array a
       loop:
-         ADD a0, t0, a0           #  -> out += cnt
-         SW a0, 0(t2)             #     store out at store_addr
-         ADDI t0, t0, 1           #     cnt++
-         ADDI t2, t2, 4           #     store_addr++
-         BLT t0, a2, loop         #  ^- branch back if cnt < 10
-      # Result should be 0x2d.
-         LW t1, -4(t2)            #     load the final value
-         ADDI a1, zero, 0x2d      #     expected result (0x2d)
-         BEQ t1, a1, pass         #     pass if as expected
+         LW   x4, 0(x3)           #     x4 = DMem[x3+0]
+         ADD  x2, x2, x4          #     add element to sum
+         ADDI x1, x1, -1          #     k--
+         ADDI x3, x3, 4           #     address of next element in array
+         BNE  x1, x0, loop        #     repeat if k > 0
+      # Result should be 15 or 0xf
+         ADDI x3, x0, 48          #     expected result should be at byte 48
+         SW   x2, 0(x3)				 # 	 store sum to DMem[12] == DMem[12*4=48]
+         BEQ  x0, x0, pass        #     pass if as expected
 
          # Branch to one of these to report pass/fail to the default testbench.
       fail:
-         ADD a1, a1, zero         #     nop fail
+         ADD x0, x0, x0           #     nop fail
       pass:
          ADD t1, t1, zero         #     nop pass
    '])
