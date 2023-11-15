@@ -18,9 +18,7 @@
       # x2: sum		# not using ABI conventions for simplicity of reading code for CS251
       # x1: k
       # x3: base address register
-      # t1: final value -- NOT USED RIGHT NOW
-      # a1: expected result  -- NOT USED RIGHT NOW
-      # t2: store addr  -- NOT USED RIGHT NOW
+      
       init:
          ADDI x1, x0, 2           #     a[0] = 2
          ADDI x2, x0, 4           #     a[1] = 4
