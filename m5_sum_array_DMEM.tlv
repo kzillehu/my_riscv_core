@@ -3,8 +3,30 @@
    use(m5-1.0)
 \SV
    m4_include_lib(['https://raw.githubusercontent.com/stevehoover/LF-Building-a-RISC-V-CPU-Core/df57c0c25435c0ddac3555df620b4fc5bd535e30/lib/risc-v_shell_lib.tlv'])
-	m4_define(['m4_serv_hex'], ['m4_serv_repo['sw/']'])
-                   
+	
+   m4_sv_get_url(['['https://raw.githubusercontent.com/kzillehu/my_riscv_core/main/dmem.hex']'])
+    
+  module init_dmem
+   	(input wire  wb_clk,
+   	input wire  wb_rst,
+   	output wire q);
+   	parameter memfile = "";
+   	parameter memsize = 8192;
+   	parameter with_csr = 1;
+   	reg [1023:0] firmware_file;
+   initial
+   	begin
+   	$display("Loading DMem RAM from %0s", "./sv_url_inc/dmem.hex");
+   	$readmemh("./sv_url_inc/dmem.hex", dut.ram.mem);
+   	end
+   servant #(.memfile  (memfile),
+   	.memsize  (memsize),
+   	.sim      (1),
+   	.with_csr (with_csr))
+   	dut(wb_clk, wb_rst, q);
+   endmodule
+                    
+
 \m5
    assemble_imem(['
       # /=======================\
@@ -19,9 +41,6 @@
       # x2: sum		# not using ABI conventions for simplicity of reading code for CS251
       # x1: k
       # x3: base address register
-      # t1: final value -- NOT USED RIGHT NOW
-      # a1: expected result  -- NOT USED RIGHT NOW
-      # t2: store addr  -- NOT USED RIGHT NOW
       init:
          ADDI x1, x0, 2           #     a[0] = 2
          ADDI x2, x0, 4           #     a[1] = 4
@@ -60,17 +79,6 @@
          ADD t1, t1, zero         #     nop pass
    '])
             
-    m4_sv_get_url(m4_serv_hex['blinky.hex'])
-    
-            begin
-   	$display("Loading RAM from %0s", "./sv_url_inc/blinky.hex");
-   	$readmemh("./sv_url_inc/blinky.hex", dut.ram.mem);
-   	end
-         servant #(.memfile  (memfile),
-   	.memsize  (memsize),
-   	.sim      (1),
-   	.with_csr (with_csr))
-   	dut(wb_clk, wb_rst, q);
 \SV
    m5_makerchip_module   // (Expanded in Nav-TLV pane.)
    m5_my_defs
