@@ -7,6 +7,7 @@
 \m5
    assemble_imem(['
       # /=======================\
+      # |    Sample Solution    |
       # | Sum elements of array |
       # \=======================/
       #
@@ -35,6 +36,7 @@
          SW   x4, 0(x6)				 # 	 store a[3]
          ADDI x6, x6, 4           #     address of a[4]
          SW   x5, 0(x6)				 # 	 store a[4]
+      # Sample Solution starts here
       reset:
          ADDI x2, x0, 0           #     sum = 0
          ADDI x1, x0, 5           #     k = 5
