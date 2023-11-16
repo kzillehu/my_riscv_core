@@ -1,11 +1,32 @@
-\m4_TLV_version 1d: tl-x.org
+\m5_TLV_version 1d: tl-x.org
+\m5
+   use(m5-1.0)
 \SV
-   m4_include_lib(['https://raw.githubusercontent.com/stevehoover/warp-v_includes/1d1023ccf8e7b0a8cf8e8fc4f0a823ebb61008e3/risc-v_defs.tlv'])
-   
+   m4_include_lib(['https://raw.githubusercontent.com/stevehoover/warp-v_includes/3127188b72f121fafd4c4ade0dd10b36755e3887/risc-v_defs.tlv'])
+
+   m4_sv_get_url(['https://raw.githubusercontent.com/kzillehu/my_riscv_core/main/dmem.hex'])
+
 // v====================== lib/risc-v_shell_lib.tlv =======================v
 
 // Configuration for WARP-V definitions.
-m4+definitions(['
+\m5
+   var(NUM_INSTRS, 0)
+   var(EXT_I, 1)
+   var(EXT_M, 0)
+   var(EXT_F, 0)
+   var(EXT_B, 0)
+   var(EXT_D, 0)
+   var(EXT_Q, 0)
+   var(EXT_A, 0)
+   var(WORD_CNT, 32)
+   
+   fn(assemble_imem, code, {
+      nullify(m5_assemble(m5_code))
+      eval(['m4_define(['M4_NUM_INSTRS'], m5_NUM_INSTRS)'])
+      eval(['m4_define(['M4_MAX_CYC'], 70)'])
+      universal_var(my_defs, m5_asm_end())
+   })
+\m4
    // Define full test program.
    // Provide a non-empty argument if this is instantiated within a \TLV region (vs. \SV).
    m4_define(['m4_test_prog'], ['m4_hide(['
@@ -82,7 +103,7 @@ m4+definitions(['
      // JAL:
      m4_asm(JAL, x25, 10)     // x25 = PC of next instr
      m4_asm(AUIPC, x4, 0)     // x4 = PC
-     m4_asm(XOR, x25, x25, x4)  # AUIPC and JAR results are the same.
+     m4_asm(XOR, x25, x25, x4)  // AUIPC and JAR results are the same.
      m4_asm(XORI, x25, x25, 1)
      // JALR:
      m4_asm(JALR, x26, x4, 10000)
@@ -101,21 +122,17 @@ m4+definitions(['
      
      m4_define(['M4_VIZ_BASE'], 16)   // (Note that immediate values are shown in disassembled instructions in binary and signed decimal in decoder regardless of this setting.)
 
+     m4_define(['M4_NUM_INSTRS'], m5_get(NUM_INSTRS))
      m4_define(['M4_MAX_CYC'], 70)
-     '])m4_ifelse(['$1'], [''], ['m4_asm_end()'], ['m4_asm_end_tlv()'])'])
-   
-   m4_define_vector(['M4_WORD'], 32)
-   m4_define(['M4_EXT_I'], 1)
-   
-   m4_define(['M4_NUM_INSTRS'], 0)
+     m4_ifelse(['$1'], [''], ['m5_asm_end()'], ['m4_asm_end_tlv()'])'])'])
    
    m4_echo(m4tlv_riscv_gen__body())
    
    // A single-line M4 macro instantiated at the end of the asm code.
    // It actually produces a definition of an SV macro that instantiates the IMem conaining the program (that can be parsed without \SV_plus). 
-   m4_define(['m4_asm_end'], ['`define READONLY_MEM(ADDR, DATA) logic [31:0] instrs [0:M4_NUM_INSTRS-1]; assign DATA = instrs[ADDR[$clog2($size(instrs)) + 1 : 2]]; assign instrs = '{m4_instr0['']m4_forloop(['m4_instr_ind'], 1, M4_NUM_INSTRS, [', m4_echo(['m4_instr']m4_instr_ind)'])};'])
    m4_define(['m4_asm_end_tlv'], ['`define READONLY_MEM(ADDR, DATA) logic [31:0] instrs [0:M4_NUM_INSTRS-1]; assign DATA \= instrs[ADDR[\$clog2(\$size(instrs)) + 1 : 2]]; assign instrs \= '{m4_instr0['']m4_forloop(['m4_instr_ind'], 1, M4_NUM_INSTRS, [', m4_echo(['m4_instr']m4_instr_ind)'])};'])
-'])
+\m5
+   macro(asm_end, ['`define READONLY_MEM(ADDR, DATA) logic [31:0] instrs [0:m5_get(NUM_INSTRS)-1]; assign DATA = instrs[ADDR[$clog2($size(instrs)) + 1 : 2]]; assign instrs = '{m4_echo(m5_instr0)m5_repeat(m5_calc(m5_NUM_INSTRS-1), ['[', ']m4_echo(m5_get(['instr']m5_calc(m5_LoopCnt + 1)))'])};'])
 
 \TLV test_prog()
    m4_test_prog(['TLV'])
@@ -184,14 +201,14 @@ m4+definitions(['
          
 // Data Memory
 \TLV dmem(_entries, _width, $_addr, $_port1_en, $_port1_data, $_port2_en, $_port2_data)
-   // Allow expressions for most inputs, so define input signals.
+   //allow init dmem with hex file
    initial begin
       /* #10 */
-         $display("Loading dmem.");
+        $display("Loading dmem.");
          $readmemh("./sv_url_inc/dmem.hex", Dmem_value_a0);
    end
-
    
+   // Allow expressions for most inputs, so define input signals.
    $dmem1_wr_en = $_port1_en;
    $dmem1_addr[\$clog2(_entries)-1:0] = $_addr;
    $dmem1_wr_data[_width-1:0] = $_port1_data;
@@ -252,7 +269,7 @@ m4+definitions(['
       assign sticky_zero = 0;
       // Instruction strings from the assembler.
       logic [40*8-1:0] instr_strs [0:M4_NUM_INSTRS];
-      assign instr_strs = '{m4_asm_mem_expr "END                                     "};
+      assign instr_strs = '{m5_repeat(m5_NUM_INSTRS, ['"m5_eval(['m5_get(['instr_str']m5_LoopCnt)'])", ']) "END                                     "};
    
    \viz_js
       m4_define(['M4_IMEM_TOP'], ['m4_ifelse(m4_eval(M4_NUM_INSTRS > 16), 0, 0, m4_eval(0 - (M4_NUM_INSTRS - 16) * 18))'])
