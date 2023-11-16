@@ -21,6 +21,8 @@
       # x2: sum		# not using ABI conventions for simplicity of reading code for CS251
       # x1: k
       # x3: base address register
+
+      # Sample Solution starts here
       reset:
          ADDI x2, x0, 0           #     sum = 0
          ADDI x1, x0, 5           #     k = 5
