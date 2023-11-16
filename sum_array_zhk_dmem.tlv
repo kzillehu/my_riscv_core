@@ -5,7 +5,7 @@
    m4_include_lib(['https://raw.githubusercontent.com/kzillehu/my_riscv_core/main/zhk_riscv_shell_lib.tlv'])
 	
    m4_sv_get_url(['https://raw.githubusercontent.com/kzillehu/my_riscv_core/main/dmem.hex'])
-                    
+              
 
 \m5
    assemble_imem(['
@@ -21,22 +21,6 @@
       # x2: sum		# not using ABI conventions for simplicity of reading code for CS251
       # x1: k
       # x3: base address register
-      init:
-         ADDI x1, x0, 2           #     a[0] = 2
-         ADDI x2, x0, 4           #     a[1] = 4
-         ADDI x3, x0, 3           #     a[2] = 3
-         ADDI x4, x0, 5           #     a[3] = 5
-         ADDI x5, x0, 1           #     a[4] = 1
-         ADDI x6, x0, 8           #     base address of array a, ie a[0]
-         SW   x1, 0(x6)				 # 	 store a[0]
-         ADDI x6, x6, 4           #     address of a[1]
-         SW   x2, 0(x6)				 # 	 store a[1]
-         ADDI x6, x6, 4           #     address of a[2]
-         SW   x3, 0(x6)				 # 	 store a[2]
-         ADDI x6, x6, 4           #     address of a[3]
-         SW   x4, 0(x6)				 # 	 store a[3]
-         ADDI x6, x6, 4           #     address of a[4]
-         SW   x5, 0(x6)				 # 	 store a[4]
       reset:
          ADDI x2, x0, 0           #     sum = 0
          ADDI x1, x0, 5           #     k = 5
@@ -64,7 +48,6 @@
    m5_my_defs
    /* verilator lint_on WIDTH */
    initial begin
-      /* #10 */
      $display("Loading dmem.");
      $readmemh("./sv_url_inc/dmem.hex", Dmem_value_a0);
    end
