@@ -211,7 +211,7 @@
    
    /dmem[m4_eval(_entries-1):0]
       $wr = /top$dmem1_wr_en && (/top$dmem1_addr == #dmem);
-      <<1$value[_width-1:0] = /*/top$_reset ? 0 */                :
+      <<1$value[_width-1:0] = /*/top$_reset ? 0                : */
                               $wr         ? /top$dmem1_wr_data :
                                             $RETAIN;
    
