@@ -4,8 +4,7 @@
 \SV
    m4_include_lib(['https://raw.githubusercontent.com/stevehoover/warp-v_includes/3127188b72f121fafd4c4ade0dd10b36755e3887/risc-v_defs.tlv'])
 
-   m4_sv_get_url(['https://raw.githubusercontent.com/kzillehu/my_riscv_core/main/dmem.hex'])
-
+  
 // v====================== lib/risc-v_shell_lib.tlv =======================v
 
 // Configuration for WARP-V definitions.
@@ -201,12 +200,7 @@
          
 // Data Memory
 \TLV dmem(_entries, _width, $_addr, $_port1_en, $_port1_data, $_port2_en, $_port2_data)
-   //allow init dmem with hex file
-   initial begin
-      /* #10 */
-        $display("Loading dmem.");
-         $readmemh("./sv_url_inc/dmem.hex", Dmem_value_a0);
-   end
+   
    
    // Allow expressions for most inputs, so define input signals.
    $dmem1_wr_en = $_port1_en;
