@@ -748,11 +748,9 @@
          where: {left: -680, top: M4_IMEM_TOP}
       
 \TLV tb()
-//   $passed_cond = (/xreg[30]$value == 32'b1) &&
+   $passed_cond = (/xreg[30]$value == 32'b1) &&
                   (! $reset && $next_pc[31:0] == $pc[31:0]);
-//   *passed = >>2$passed_cond;
-
-    *passed = $pc ==? M4_NUM_INSTRS;
+   *passed = >>2$passed_cond;
 
 
 // (A copy of this appears in the shell code.)
