@@ -13,7 +13,7 @@
       # | Sum elements of array |
       # \=======================/
       #
-      # Default program for RV32I test
+      # sum array program for RV32I
       # Add a[0] (2),a[1] (4),a[2] (3),a[3] (5), and a[4] (1) (in that order from DMem).
       # Store final sum in memory location 12 (15).
       #
@@ -22,7 +22,7 @@
       # x1: k
       # x3: base address register
 
-      # Sample Solution starts here
+      # Sample solution starts here
       reset:
          ADDI x2, x0, 0           #     sum = 0
          ADDI x1, x0, 5           #     k = 5
@@ -33,7 +33,7 @@
          ADDI x1, x1, -1          #     k--
          ADDI x3, x3, 4           #     address of next element in array
          BNE  x1, x0, loop        #     repeat if k > 0
-      # Result should be 15 or 0xf
+      # Result should be 15 or 0xf in x3
          ADDI x3, x0, 48          #     expected result should be at byte 48
          SW   x2, 0(x3)				 # 	 store sum to DMem[12] == DMem[12*4=48]
    '])
