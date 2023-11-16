@@ -34,9 +34,6 @@
       # Result should be 15 or 0xf
          ADDI x3, x0, 48          #     expected result should be at byte 48
          SW   x2, 0(x3)				 # 	 store sum to DMem[12] == DMem[12*4=48]
-         BEQ  x0, x0, pass        #     pass if as expected
-      pass:
-         ADD x0, x0, x0           #     nop pass
    '])
             
 \SV
@@ -264,7 +261,8 @@
    
    // Assert these to end simulation (before Makerchip cycle limit).
    m4+tb()
-   *passed =  1;
+   *passed = *cyc_cnt > 29;
+   *failed = 1'b0;
    
    m4+rf(32, 32, $reset, $wr_en, $wr_index[4:0], $wr_data[31:0], $rd1_en, $rd1_index[4:0], $src1_value, $rd2_en, $rd2_index[4:0], $src2_value)
    m4+dmem(32, 32, $result[6:2], $is_s_instr, $src2_value, $is_load, $ld_data)
