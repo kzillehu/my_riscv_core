@@ -15,7 +15,7 @@
       #
       # Default program for RV32I test
       # Add a[0] (2),a[1] (4),a[2] (3),a[3] (5), and a[4] (1) (in that order from DMem).
-      # Store final sum in memory location 6 (15).
+      # Store final sum in memory location 12 (15).
       #
       # Regs:
       # x2: sum		# not using ABI conventions for simplicity of reading code for CS251
