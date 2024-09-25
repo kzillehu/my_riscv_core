@@ -34,8 +34,8 @@
          ADDI x3, x3, 4           #     address of next element in array
          BNE  x1, x0, loop        #     repeat if k > 0
       # Result should be 15 or 0xf in x2
-         ADDI x3, x0, 48          #     expected result should be at byte 48
-         SW   x2, 0(x3)				 # 	 store sum to DMem[12] == DMem[12*4=48]
+         ADDI x6, x0, 48          #     expected result should be at byte 48
+         SW   x2, 0(x6)				 # 	 store sum to DMem[12] == DMem[12*4=48]
    '])
             
 \SV
